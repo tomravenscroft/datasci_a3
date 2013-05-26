@@ -11,28 +11,31 @@ mr = MapReduce.MapReduce()
 # Do not modify above this line
 
 def mapper(record):
-    # key: document identifier
-    # value: document contents
     key = record[0]
     value = record[1]
-    words = value.split()
 
-    for w in words:
-        mr.emit_intermediate(w, key)
+    sorted_pair = sorted([key,value])
+
+    mr.emit_intermediate((sorted_pair[0], sorted_pair[1]), value)
 
 def reducer(key, list_of_values):
-    # key: word
-    # value: list of occurrence counts
 
-    total = []
+    #print "K: " + key_list
+    #print list_of_values
+
+    friends = []
 
     # Add new names to the list.
     for v in list_of_values:
-        if v not in total:
-            total += [v]
+        friends += [v]
 
-    # Emit the result.
-    mr.emit((key, total))
+    if len(friends) == 1:
+        mr.emit(key)
+        mr.emit((key[1],key[0]))
+
+    #print key
+    #print friends
+    #print "-----"
 
 # Do not modify below this line
 # =============================
